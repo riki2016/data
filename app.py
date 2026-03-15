@@ -8,23 +8,7 @@ st.set_page_config(page_title="Dashboard Performance Atletica", layout="wide")
 
 st.title("Dashboard Performance Atletica")
 
-# ================== 1. CARICAMENTO FILE ==================
 
-#PATH_FILE = "Dataset_combinato_GPS_finale.xlsx"  # local file
-
-#uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
-
-#if uploaded_file is not None:
- #   df_raw = pd.read_excel(uploaded_file)
-
-#elif os.path.exists(PATH_FILE):
-#    df_raw = pd.read_excel(PATH_FILE)
-
-#else:
- #   st.warning("Carica un file Excel per iniziare.")
-  #  st.stop()
-
-#st.success("File caricato con successo!")
 
 # ================== 2. PREPARAZIONE DATI ==================
 
