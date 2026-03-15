@@ -10,21 +10,21 @@ st.title("Dashboard Performance Atletica")
 
 # ================== 1. CARICAMENTO FILE ==================
 
-PATH_FILE = "Dataset_combinato_GPS_finale.xlsx"  # local file
+#PATH_FILE = "Dataset_combinato_GPS_finale.xlsx"  # local file
 
-uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
+#uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
 
-if uploaded_file is not None:
-    df_raw = pd.read_excel(uploaded_file)
+#if uploaded_file is not None:
+ #   df_raw = pd.read_excel(uploaded_file)
 
-elif os.path.exists(PATH_FILE):
-    df_raw = pd.read_excel(PATH_FILE)
+#elif os.path.exists(PATH_FILE):
+#    df_raw = pd.read_excel(PATH_FILE)
 
-else:
-    st.warning("Carica un file Excel per iniziare.")
-    st.stop()
+#else:
+ #   st.warning("Carica un file Excel per iniziare.")
+  #  st.stop()
 
-st.success("File caricato con successo!")
+#st.success("File caricato con successo!")
 
 # ================== 2. PREPARAZIONE DATI ==================
 
