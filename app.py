@@ -6,7 +6,7 @@ import os
 
 st.set_page_config(page_title="Dashboard Performance Atletica", layout="wide")
 
-st.title("Dashboard Performance Atletica")
+st.title("Dashboard Performance Atletica U16")
 
 # ================== 1. CARICAMENTO FILE ==================
 
