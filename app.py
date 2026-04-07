@@ -9,17 +9,14 @@ st.set_page_config(page_title="Dashboard Performance Atletica", layout="wide")
 st.title("Dashboard Performance Atletica U16")
 
 # ================== 1. CARICAMENTO FILE ==================
-
-PATH_FILE = "Dataset_combinato_GPS_finale.xlsx"  # local file
+PATH_FILE = "Dataset_combinato_GPS_finale.xlsx"
 
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
 
 if uploaded_file is not None:
     df_raw = pd.read_excel(uploaded_file)
-
 elif os.path.exists(PATH_FILE):
     df_raw = pd.read_excel(PATH_FILE)
-
 else:
     st.warning("Carica un file Excel per iniziare.")
     st.stop()
@@ -27,7 +24,6 @@ else:
 st.success("File caricato con successo!")
 
 # ================== 2. PREPARAZIONE DATI ==================
-
 df_raw['Data'] = pd.to_datetime(df_raw['Data'])
 
 mask_match_valid = (
@@ -40,13 +36,26 @@ mask_training = df_raw['Competition'] == 'Full Training'
 df = df_raw[mask_match_valid | mask_training].copy()
 df = df.sort_values('Data')
 
+# ================== AGGREGAZIONE GIORNALIERA ==================
+
+# colonne numeriche da sommare (escludo Vel Max)
+numeric_cols = df.select_dtypes(include='number').columns.tolist()
+numeric_cols = [col for col in numeric_cols if col != 'Vel Max']
+
+# aggregazione: somma metriche + primo opponent
+df = df.groupby(['PLAYER', 'Data', 'Competition'], as_index=False).agg({
+    **{col: 'sum' for col in numeric_cols},
+    'Opponent': 'first'
+})
+
+# ================== TEAM AVERAGE ==================
 df_team_avg = df[df['PLAYER'] == 'Team Average'].copy()
 
+# ================== LISTE FILTRI ==================
 players = [p for p in df['PLAYER'].dropna().unique().tolist() if p != 'Team Average']
 players.insert(0, 'Team Average')
 
-metriche = [m for m in df.select_dtypes(include='number').columns.tolist() if m != 'Vel Max']
-
+metriche = numeric_cols
 competitions = df['Competition'].dropna().unique()
 
 color_map = {
@@ -55,22 +64,19 @@ color_map = {
     'Test Match': 'rgba(0,0,255,0.85)'
 }
 
-# ================== 3. SIDEBAR CONTROLLI ==================
-
+# ================== 3. SIDEBAR ==================
 st.sidebar.header("Filtri")
 
 giocatore = st.sidebar.selectbox("Giocatore", players)
 metrica = st.sidebar.selectbox("Metrica", metriche)
 
 # ================== 4. GRAFICO ==================
-
 df_plot = df[df['PLAYER'] == giocatore].copy()
 
 fig = go.Figure()
 
 # ---- BARRE ----
 for comp in competitions:
-
     df_comp = df_plot[df_plot['Competition'] == comp]
 
     if df_comp.empty:
@@ -99,7 +105,6 @@ for comp in competitions:
 
 # ---- TEAM AVERAGE ----
 if not df_team_avg.empty and giocatore != 'Team Average':
-
     fig.add_trace(go.Scatter(
         x=df_team_avg['Data'],
         y=df_team_avg[metrica],
@@ -114,7 +119,6 @@ if not df_team_avg.empty and giocatore != 'Team Average':
     ))
 
 # ---- LAYOUT ----
-
 fig.update_layout(
     title=f"{metrica} - {giocatore}",
     barmode='overlay',
