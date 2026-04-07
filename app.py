@@ -38,14 +38,12 @@ df = df.sort_values('Data')
 
 # ================== AGGREGAZIONE GIORNALIERA ==================
 
-# colonne numeriche da sommare (escludo Vel Max)
 numeric_cols = df.select_dtypes(include='number').columns.tolist()
 numeric_cols = [col for col in numeric_cols if col != 'Vel Max']
 
-# aggregazione: somma metriche + primo opponent
 df = df.groupby(['PLAYER', 'Data', 'Competition'], as_index=False).agg({
     **{col: 'sum' for col in numeric_cols},
-    'Opponent': 'first'
+    'Opponent': lambda x: ', '.join(sorted(set(x.dropna())))
 })
 
 # ================== TEAM AVERAGE ==================
@@ -91,7 +89,11 @@ for comp in competitions:
         text=df_comp['Opponent'] if comp in ['League','Test Match'] else None,
         textposition='inside',
         insidetextanchor='middle',
-        textfont=dict(color='white', size=11)
+        textfont=dict(color='white', size=11),
+        hovertemplate=
+            "<b>Data:</b> %{x}<br>" +
+            "<b>Valore:</b> %{y}<br>" +
+            "<b>Opponent:</b> %{text}<extra></extra>"
     ))
 
     fig.add_trace(go.Scatter(
